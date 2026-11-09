@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Produtos</title>
+</head>
+<body>
+
+    <h1>Produtos cadastrados</h1>
+
+    <a href="/cadastrar">Cadastrar novo produto</a>
+
+    <br><br>
+
+    <table border="1">
+
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Preço</th>
+            <th>Quantidade</th>
+            <th>Categoria</th>
+            <th>Ação</th>
+        </tr>
+
+        {% for produto in produtos %}
+
+        <tr>
+            <td>{{ produto["id"] }}</td>
+            <td>{{ produto["nome"] }}</td>
+            <td>{{ produto["descricao"] }}</td>
+            <td>R$ {{ "%.2f"|format(produto["preco"]) }}</td>
+            <td>{{ produto["quantidade"] }}</td>
+            <td>{{ produto["categoria"] }}</td>
+
+            <td>
+                <button type="button"
+                    onclick="excluirProduto({{ produto['id'] }})">
+                    🗑️ Excluir
+                </button>
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    <script>
+
+        async function excluirProduto(id) {
+
+            if (!confirm("Deseja realmente excluir este produto?")) {
+                return;
+            }
+
+            const resposta = await fetch("/apagar", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id: id
+                })
+            });
+
+            const resultado = await resposta.json();
+
+            if (resposta.ok) {
+                alert(resultado.mensagem);
+                location.reload();
+            } else {
+                alert("Erro ao excluir produto.");
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
